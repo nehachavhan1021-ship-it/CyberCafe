@@ -1,46 +1,50 @@
-const fs = require("fs");
-const path = require("path");
-
 const PrintJob = require("../models/printJob.model");
-
-const uploadsDir = path.join(__dirname, "..", "uploads");
+const { deleteFile } = require("./fileCleanup");
 
 const cleanupOldFiles = async () => {
     try {
-        const expiryTime = Date.now() - (
-            24 * 60 * 60 * 1000
+        const twentyFourHoursAgo = new Date(
+            Date.now() - 24 * 60 * 60 * 1000
         );
 
         const oldJobs = await PrintJob.find({
-            createdAt: {
-                $lt: new Date(expiryTime)
+            status: "completed",
+            completedAt: {
+                $lte: twentyFourHoursAgo
+            },
+            fileName: {
+                $ne: null
             }
         });
 
+        console.log(
+            `Found ${oldJobs.length} completed files to clean up.`
+        );
+
         for (const job of oldJobs) {
-            if (!job.fileName) {
-                continue;
-            }
+            try {
+                await deleteFile(job.fileName);
 
-            const filePath = path.join(
-                uploadsDir,
-                job.fileName
-            );
+                // Prevent the same file from being
+                // deleted again on the next cleanup
+                job.fileName = null;
 
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
+                await job.save();
 
                 console.log(
-                    `Deleted old file: ${job.fileName}`
+                    `Deleted file for job: ${job._id}`
+                );
+
+            } catch (fileError) {
+                console.error(
+                    `Failed to delete file for job ${job._id}:`,
+                    fileError
                 );
             }
         }
 
     } catch (error) {
-        console.error(
-            "Cleanup error:",
-            error.message
-        );
+        console.error("Cleanup error:", error);
     }
 };
 

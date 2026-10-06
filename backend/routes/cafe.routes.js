@@ -28,8 +28,7 @@ router.get("/my-qr", authMiddleware, async (req, res) => {
             });
         }
 
-        const uploadUrl =
-            `${frontendUrl.replace(/\/$/, "")}/upload/${cafe.qrCodeId}`;
+        const uploadUrl = `${frontendUrl}/upload/${cafe.qrCodeId}`;
 
         const qrCode = await QRCode.toDataURL(uploadUrl);
 
@@ -42,6 +41,7 @@ router.get("/my-qr", authMiddleware, async (req, res) => {
             uploadUrl,
             qrCode
         });
+
     } catch (error) {
         console.error("QR generation error:", error);
 

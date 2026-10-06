@@ -42,7 +42,7 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-box">
-        <h1>PrintCafe</h1>
+        <h1>CyberCafe</h1>
 
         <p className="login-subtitle">Owner Login</p>
 

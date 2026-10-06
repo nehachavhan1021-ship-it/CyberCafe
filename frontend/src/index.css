@@ -1989,3 +1989,50 @@ button {
         padding: 24px 16px;
     }
 }
+.payment-section {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.payment-info span {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.payment-info strong {
+  font-size: 24px;
+  color: #111827;
+}
+
+.pay-button {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pay-button:hover {
+  opacity: 0.9;
+}
+
+.payment-note {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+}

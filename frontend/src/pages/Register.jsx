@@ -45,7 +45,7 @@ function Register() {
   return (
     <div className="register-page">
       <div className="register-box">
-        <h1>PrintCafe</h1>
+        <h1>CyberCafe</h1>
         <p className="register-subtitle">Create your cybercafé owner account</p>
 
         {error && <div className="register-error">{error}</div>}

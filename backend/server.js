@@ -3,9 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-const dns = require('dns'); // 
-// Set custom DNS servers (Google and Cloudflare) 
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+const dns = require("dns"); //
+// Set custom DNS servers (Google and Cloudflare)
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 const connectDB = require("./db/db");
 
 const authRoutes = require("./routes/auth.routes");
@@ -17,32 +17,34 @@ const cleanupOldFiles = require("./utils/cleanupOldFiles");
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://10.241.118.228:5173"
-];
+const allowedOrigins = ["http://localhost:5173", "http://10.241.118.228:5173"];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
 connectDB();
 
 app.get("/", (req, res) => {
-res.json({
-message: "PrintCafe backend is running"
-});
+  res.json({
+    message: "PrintCafe backend is running",
+  });
 });
 
 // Automatic file cleanup
 cleanupOldFiles();
 
-setInterval(() => {
-cleanupOldFiles();
-}, 60 * 60 * 1000);
+setInterval(
+  () => {
+    cleanupOldFiles();
+  },
+  60 * 60 * 1000,
+);
 
 // API routes
 app.use("/api/auth", authRoutes);
@@ -54,5 +56,5 @@ app.use("/api/pricing", pricingRoutes);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
-console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

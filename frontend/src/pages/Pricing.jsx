@@ -99,7 +99,7 @@ function Pricing() {
           </div>
 
           <div>
-            <h1>PrintCafe</h1>
+            <h1>CyberCafe</h1>
             <span>Pricing Settings</span>
           </div>
         </div>
