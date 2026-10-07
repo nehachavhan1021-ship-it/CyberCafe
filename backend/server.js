@@ -17,7 +17,7 @@ const cleanupOldFiles = require("./utils/cleanupOldFiles");
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173", "http://10.241.118.228:5173"];
+const allowedOrigins = ["http://localhost:5173", "https://cyber-cafe-bay.vercel.app"];
 
 app.use(
   cors({
