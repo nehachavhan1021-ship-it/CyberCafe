@@ -42,13 +42,16 @@ router.get("/my-qr", authMiddleware, async (req, res) => {
             qrCode
         });
 
-    } catch (error) {
-        console.error("QR generation error:", error);
+   } catch (error) {
+    console.error("QR generation error:", error);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
 
-        res.status(500).json({
-            message: "Failed to generate QR code"
-        });
-    }
+    res.status(500).json({
+        message: "Failed to generate QR code",
+        error: error.message
+    });
+}
 });
 
 router.get("/:qrCodeId", async (req, res) => {
