@@ -8,11 +8,7 @@ const printOrderSchema = new mongoose.Schema(
       trim: true,
     },
 
-    customerPhone: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+    
 
     cafe: {
       type: mongoose.Schema.Types.ObjectId,
@@ -96,17 +92,9 @@ const printOrderSchema = new mongoose.Schema(
     // Payment
     // -----------------------------
 
-    paymentMethod: {
-      type: String,
-      enum: ["cash", "upi"],
-      default: "cash",
-    },
+    
 
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "to_verify"],
-      default: "pending",
-    },
+   
 
     completedAt: {
       type: Date,

@@ -67,7 +67,11 @@ const fileFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb(new Error("Only PDF, JPG and PNG files are allowed"));
+    cb(
+      new Error(
+        "Only PDF, JPG and PNG files are allowed"
+      )
+    );
   }
 };
 
@@ -97,12 +101,10 @@ router.post(
       const {
         qrCodeId,
         customerName,
-        customerPhone,
         copies,
         printType,
         paperSize,
         printSides,
-        paymentMethod,
       } = req.body;
 
       // ------------------------------------
@@ -143,11 +145,22 @@ router.post(
       // Print options
       // ------------------------------------
 
-      const selectedPrintType = printType || "bw";
-      const selectedPaperSize = paperSize || "A4";
-      const selectedPrintSides = printSides || "single";
+      const selectedPrintType =
+        printType || "bw";
 
-      if (!["bw", "color"].includes(selectedPrintType)) {
+      const selectedPaperSize =
+        paperSize || "A4";
+
+      const selectedPrintSides =
+        printSides || "single";
+
+      // Validate print type
+
+      if (
+        !["bw", "color"].includes(
+          selectedPrintType
+        )
+      ) {
         deleteUploadedFiles(req.files);
 
         return res.status(400).json({
@@ -155,7 +168,13 @@ router.post(
         });
       }
 
-      if (!["A4", "A3"].includes(selectedPaperSize)) {
+      // Validate paper size
+
+      if (
+        !["A4", "A3"].includes(
+          selectedPaperSize
+        )
+      ) {
         deleteUploadedFiles(req.files);
 
         return res.status(400).json({
@@ -163,7 +182,13 @@ router.post(
         });
       }
 
-      if (!["single", "double"].includes(selectedPrintSides)) {
+      // Validate print sides
+
+      if (
+        !["single", "double"].includes(
+          selectedPrintSides
+        )
+      ) {
         deleteUploadedFiles(req.files);
 
         return res.status(400).json({
@@ -172,24 +197,11 @@ router.post(
       }
 
       // ------------------------------------
-      // Payment method
-      // ------------------------------------
-
-      const selectedPaymentMethod = paymentMethod || "cash";
-
-      if (!["cash", "upi"].includes(selectedPaymentMethod)) {
-        deleteUploadedFiles(req.files);
-
-        return res.status(400).json({
-          message: "Invalid payment method",
-        });
-      }
-
-      // ------------------------------------
       // Copies
       // ------------------------------------
 
-      const numberOfCopies = Number(copies) || 1;
+      const numberOfCopies =
+        Number(copies) || 1;
 
       if (
         !Number.isInteger(numberOfCopies) ||
@@ -230,24 +242,35 @@ router.post(
         let pages = 1;
 
         // PDF page count
-        if (file.mimetype === "application/pdf") {
-          const pdfBytes = fs.readFileSync(file.path);
+        if (
+          file.mimetype ===
+          "application/pdf"
+        ) {
+          const pdfBytes =
+            fs.readFileSync(file.path);
 
-          const pdfDoc = await PDFDocument.load(pdfBytes);
+          const pdfDoc =
+            await PDFDocument.load(
+              pdfBytes
+            );
 
           pages = pdfDoc.getPageCount();
 
           if (pages < 1) {
             throw new Error(
-              `Unable to detect pages in ${file.originalname}`,
+              `Unable to detect pages in ${file.originalname}`
             );
           }
         }
 
         // Images count as one page
         orderFiles.push({
-          originalName: file.originalname,
-          fileName: file.filename,
+          originalName:
+            file.originalname,
+
+          fileName:
+            file.filename,
+
           pages,
         });
 
@@ -271,17 +294,21 @@ router.post(
 
       if (selectedPaperSize === "A4") {
         if (selectedPrintType === "bw") {
-          pricePerSheet = cafe.pricing?.a4Bw;
+          pricePerSheet =
+            cafe.pricing?.a4Bw;
         } else {
-          pricePerSheet = cafe.pricing?.a4Color;
+          pricePerSheet =
+            cafe.pricing?.a4Color;
         }
       }
 
       if (selectedPaperSize === "A3") {
         if (selectedPrintType === "bw") {
-          pricePerSheet = cafe.pricing?.a3Bw;
+          pricePerSheet =
+            cafe.pricing?.a3Bw;
         } else {
-          pricePerSheet = cafe.pricing?.a3Color;
+          pricePerSheet =
+            cafe.pricing?.a3Color;
         }
       }
 
@@ -312,92 +339,88 @@ router.post(
         numberOfCopies;
 
       // ------------------------------------
-      // Payment status
-      // ------------------------------------
-
-      const selectedPaymentStatus =
-        selectedPaymentMethod === "upi"
-          ? "to_verify"
-          : "pending";
-
-      // ------------------------------------
       // Create ONE order
       // ------------------------------------
 
-      const printOrder = await PrintOrder.create({
-        customerName: customerName.trim(),
+      const printOrder =
+        await PrintOrder.create({
+          customerName:
+            customerName.trim(),
 
-        customerPhone:
-          customerPhone?.trim() || "",
+          cafe: cafe._id,
 
-        cafe: cafe._id,
+          files: orderFiles,
 
-        files: orderFiles,
+          totalPages,
 
-        totalPages,
+          copies:
+            numberOfCopies,
 
-        copies: numberOfCopies,
+          printType:
+            selectedPrintType,
 
-        printType: selectedPrintType,
+          paperSize:
+            selectedPaperSize,
 
-        paperSize: selectedPaperSize,
+          printSides:
+            selectedPrintSides,
 
-        printSides: selectedPrintSides,
+          totalSheets,
 
-        totalSheets,
+          totalPrice,
 
-        totalPrice,
-
-        status: "pending",
-
-        paymentMethod: selectedPaymentMethod,
-
-        paymentStatus: selectedPaymentStatus,
-      });
+          status: "pending",
+        });
 
       // ------------------------------------
       // Response
       // ------------------------------------
 
       res.status(201).json({
-        message: "Print order created successfully",
+        message:
+          "Print order created successfully",
 
         order: {
           id: printOrder._id,
 
-          customerName: printOrder.customerName,
+          customerName:
+            printOrder.customerName,
 
-          customerPhone: printOrder.customerPhone,
+          files:
+            printOrder.files,
 
-          files: printOrder.files,
+          totalPages:
+            printOrder.totalPages,
 
-          totalPages: printOrder.totalPages,
+          copies:
+            printOrder.copies,
 
-          copies: printOrder.copies,
+          printType:
+            printOrder.printType,
 
-          printType: printOrder.printType,
+          paperSize:
+            printOrder.paperSize,
 
-          paperSize: printOrder.paperSize,
+          printSides:
+            printOrder.printSides,
 
-          printSides: printOrder.printSides,
+          totalSheets:
+            printOrder.totalSheets,
 
-          totalSheets: printOrder.totalSheets,
+          totalPrice:
+            printOrder.totalPrice,
 
-          totalPrice: printOrder.totalPrice,
+          status:
+            printOrder.status,
 
-          status: printOrder.status,
-
-          paymentMethod: printOrder.paymentMethod,
-
-          paymentStatus: printOrder.paymentStatus,
-
-          createdAt: printOrder.createdAt,
+          createdAt:
+            printOrder.createdAt,
         },
       });
     } catch (error) {
       console.error(
         "Print order creation error:",
-        error,
+        error
       );
 
       if (req.files) {
@@ -405,11 +428,13 @@ router.post(
       }
 
       res.status(500).json({
-        message: "Failed to create print order",
+        message:
+          "Failed to create print order",
+
         error: error.message,
       });
     }
-  },
+  }
 );
 
 // ------------------------------------
@@ -429,7 +454,7 @@ function deleteUploadedFiles(files) {
       console.error(
         "Failed to delete file:",
         file.path,
-        error,
+        error
       );
     }
   }

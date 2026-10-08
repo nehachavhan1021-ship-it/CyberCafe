@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PDFDocument } from "pdf-lib";
 import api from "../services/api";
-import QRCode from "qrcode";
-import { OWNER_UPI_ID, OWNER_NAME } from "../config.js";
+
+
 import {
   Upload,
   X,
   FileText,
-  QrCode,
-  Copy,
-  Check,
+  
 } from "lucide-react";
 
 function UploadPage() {
@@ -27,16 +25,16 @@ function UploadPage() {
   const [files, setFiles] = useState([]);
 
   const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
+  
 
   const [copies, setCopies] = useState(1);
 
   const [printType, setPrintType] = useState("bw");
   const [paperSize, setPaperSize] = useState("A4");
   const [printSides, setPrintSides] = useState("single");
-  const [upiCopied, setUpiCopied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [paymentQr, setPaymentQr] = useState("");
+
+  
+
   const [order, setOrder] = useState(null);
 
   // ------------------------------------
@@ -83,19 +81,27 @@ function UploadPage() {
     setError("");
     setSuccess("");
 
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+    ];
 
     const newFiles = [];
 
     for (const file of selectedFiles) {
       if (!allowedTypes.includes(file.type)) {
-        setError(`${file.name}: Only PDF, JPG and PNG files are allowed.`);
+        setError(
+          `${file.name}: Only PDF, JPG and PNG files are allowed.`,
+        );
 
         continue;
       }
 
       if (file.size > 10 * 1024 * 1024) {
-        setError(`${file.name}: File size must be less than 10 MB.`);
+        setError(
+          `${file.name}: File size must be less than 10 MB.`,
+        );
 
         continue;
       }
@@ -122,7 +128,10 @@ function UploadPage() {
       }
     }
 
-    setFiles((previousFiles) => [...previousFiles, ...newFiles]);
+    setFiles((previousFiles) => [
+      ...previousFiles,
+      ...newFiles,
+    ]);
 
     event.target.value = "";
   };
@@ -133,7 +142,9 @@ function UploadPage() {
 
   const removeFile = (index) => {
     setFiles((previousFiles) =>
-      previousFiles.filter((_, fileIndex) => fileIndex !== index),
+      previousFiles.filter(
+        (_, fileIndex) => fileIndex !== index,
+      ),
     );
   };
 
@@ -141,7 +152,10 @@ function UploadPage() {
   // Price calculation
   // ------------------------------------
 
-  const totalPages = files.reduce((total, item) => total + item.pages, 0);
+  const totalPages = files.reduce(
+    (total, item) => total + item.pages,
+    0,
+  );
 
   const getPricePerSheet = () => {
     if (!cafe?.pricing) {
@@ -168,7 +182,9 @@ function UploadPage() {
   };
 
   const totalSheets =
-    printSides === "double" ? Math.ceil(totalPages / 2) : totalPages;
+    printSides === "double"
+      ? Math.ceil(totalPages / 2)
+      : totalPages;
 
   const calculatePrice = () => {
     const pricePerSheet = getPricePerSheet();
@@ -177,50 +193,10 @@ function UploadPage() {
   };
 
   // ------------------------------------
-  // UPI payment
+  // Copy UPI ID
   // ------------------------------------
 
-  const handlePayment = () => {
-    if (!order) {
-      setError("Order information not found.");
-      return;
-    }
-
-    const amount = Number(order.totalPrice);
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setError("Invalid payment amount.");
-      return;
-    }
-
-    if (!OWNER_UPI_ID) {
-      setError("Owner UPI ID is not configured.");
-      return;
-    }
-
-    const upiUrl =
-      `upi://pay?pa=${encodeURIComponent(OWNER_UPI_ID)}` +
-      `&pn=${encodeURIComponent(OWNER_NAME)}` +
-      `&am=${amount.toFixed(2)}` +
-      `&cu=INR`;
-
-    window.location.href = upiUrl;
-  };
-  const copyUpiId = async () => {
-    try {
-      await navigator.clipboard.writeText(OWNER_UPI_ID);
-
-      setUpiCopied(true);
-
-      setTimeout(() => {
-        setUpiCopied(false);
-      }, 2000);
-    } catch (error) {
-      console.error("Copy failed:", error);
-      setError("Could not copy UPI ID.");
-    }
-  };
-
+  
   // ------------------------------------
   // Upload / create order
   // ------------------------------------
@@ -257,20 +233,13 @@ function UploadPage() {
       });
 
       formData.append("qrCodeId", qrCodeId);
-
       formData.append("copies", copies);
-
       formData.append("printType", printType);
-
       formData.append("paperSize", paperSize);
-
       formData.append("printSides", printSides);
-
       formData.append("customerName", customerName);
-
-      formData.append("customerPhone", customerPhone);
-
-      formData.append("paymentMethod", paymentMethod);
+     
+      
 
       const response = await api.post("/upload", formData);
 
@@ -282,42 +251,14 @@ function UploadPage() {
         throw new Error("Order details were not returned.");
       }
 
-const generatePaymentQr = async (createdOrder) => {
-  const amount = Number(createdOrder.totalPrice);
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    setError("Invalid payment amount.");
-    return;
-  }
-
-  if (!OWNER_UPI_ID) {
-    setError("Owner UPI ID is not configured.");
-    return;
-  }
-
-  const upiUrl =
-    `upi://pay?pa=${encodeURIComponent(OWNER_UPI_ID)}` +
-    `&pn=${encodeURIComponent(OWNER_NAME)}` +
-    `&am=${amount.toFixed(2)}` +
-    `&cu=INR`;
-
-  try {
-    const qr = await QRCode.toDataURL(upiUrl);
-
-    setPaymentQr(qr);
-  } catch (error) {
-    console.error("Payment QR error:", error);
-    setError("Unable to generate payment QR.");
-  }
-};
       setOrder(createdOrder);
-await generatePaymentQr(createdOrder);
+
       setSuccess("Print order created successfully!");
 
       // Clear form after order creation
       setFiles([]);
       setCustomerName("");
-      setCustomerPhone("");
+     
       setCopies(1);
       setPrintType("bw");
       setPaperSize("A4");
@@ -326,7 +267,8 @@ await generatePaymentQr(createdOrder);
       console.error("Upload error:", error);
 
       setError(
-        error.response?.data?.message || "Failed to create print order.",
+        error.response?.data?.message ||
+          "Failed to create print order.",
       );
     } finally {
       setUploading(false);
@@ -356,6 +298,7 @@ await generatePaymentQr(createdOrder);
   return (
     <div className="upload-page">
       <div className="upload-container">
+
         {/* Header */}
 
         <header className="upload-header">
@@ -367,47 +310,52 @@ await generatePaymentQr(createdOrder);
         </header>
 
         <main className="upload-card">
+
           {/* Customer Details */}
 
           <div className="form-section">
-            <label className="section-label">Customer Details</label>
+            <label className="section-label">
+              Customer Details
+            </label>
 
             <input
               type="text"
               placeholder="Customer name"
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              onChange={(e) =>
+                setCustomerName(e.target.value)
+              }
               className="customer-input"
             />
 
-            <input
-              type="tel"
-              placeholder="Phone number (optional)"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              className="customer-input"
-            />
+           
           </div>
 
           {/* Cafe Information */}
 
           <div className="cafe-info">
-            <span className="cafe-label">PRINT SERVICE</span>
+            <span className="cafe-label">
+              PRINT SERVICE
+            </span>
 
             <h1>Send your documents</h1>
 
             <p>
-              Upload one or multiple documents and choose your printing
-              preferences.
+              Upload one or multiple documents and choose
+              your printing preferences.
             </p>
 
-            <div className="cafe-name">{cafe?.name}</div>
+            <div className="cafe-name">
+              {cafe?.name}
+            </div>
           </div>
 
           {/* Documents */}
 
           <div className="form-section">
-            <label className="section-label">Documents</label>
+            <label className="section-label">
+              Documents
+            </label>
 
             <label className="file-upload">
               <input
@@ -423,7 +371,9 @@ await generatePaymentQr(createdOrder);
 
               <strong>Choose documents</strong>
 
-              <span>PDF, JPG or PNG • Maximum 10MB per file</span>
+              <span>
+                PDF, JPG or PNG • Maximum 10MB per file
+              </span>
             </label>
           </div>
 
@@ -431,7 +381,9 @@ await generatePaymentQr(createdOrder);
 
           {files.length > 0 && (
             <div className="form-section">
-              <label className="section-label">Selected documents</label>
+              <label className="section-label">
+                Selected documents
+              </label>
 
               <div className="selected-files">
                 {files.map((item, index) => (
@@ -443,16 +395,30 @@ await generatePaymentQr(createdOrder);
                       <FileText size={20} />
 
                       <div>
-                        <strong>{item.file.name}</strong>
+                        <strong>
+                          {item.file.name}
+                        </strong>
 
                         <span>
-                          {item.pages} {item.pages === 1 ? "page" : "pages"} •{" "}
-                          {(item.file.size / 1024 / 1024).toFixed(2)} MB
+                          {item.pages}{" "}
+                          {item.pages === 1
+                            ? "page"
+                            : "pages"}{" "}
+                          •{" "}
+                          {(
+                            item.file.size /
+                            1024 /
+                            1024
+                          ).toFixed(2)}{" "}
+                          MB
                         </span>
                       </div>
                     </div>
 
-                    <button type="button" onClick={() => removeFile(index)}>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                    >
                       <X size={18} />
                     </button>
                   </div>
@@ -464,19 +430,28 @@ await generatePaymentQr(createdOrder);
           {/* Copies */}
 
           <div className="form-section">
-            <label className="section-label">Copies</label>
+            <label className="section-label">
+              Copies
+            </label>
 
             <div className="copies-control">
               <button
                 type="button"
-                onClick={() => setCopies(Math.max(1, copies - 1))}
+                onClick={() =>
+                  setCopies(Math.max(1, copies - 1))
+                }
               >
                 −
               </button>
 
               <span>{copies}</span>
 
-              <button type="button" onClick={() => setCopies(copies + 1)}>
+              <button
+                type="button"
+                onClick={() =>
+                  setCopies(copies + 1)
+                }
+              >
                 +
               </button>
             </div>
@@ -485,12 +460,18 @@ await generatePaymentQr(createdOrder);
           {/* Print Type */}
 
           <div className="form-section">
-            <label className="section-label">Print type</label>
+            <label className="section-label">
+              Print type
+            </label>
 
             <div className="option-grid">
               <button
                 type="button"
-                className={printType === "bw" ? "option active" : "option"}
+                className={
+                  printType === "bw"
+                    ? "option active"
+                    : "option"
+                }
                 onClick={() => setPrintType("bw")}
               >
                 <span>●</span>
@@ -499,7 +480,11 @@ await generatePaymentQr(createdOrder);
 
               <button
                 type="button"
-                className={printType === "color" ? "option active" : "option"}
+                className={
+                  printType === "color"
+                    ? "option active"
+                    : "option"
+                }
                 onClick={() => setPrintType("color")}
               >
                 <span>◉</span>
@@ -511,12 +496,18 @@ await generatePaymentQr(createdOrder);
           {/* Paper Size */}
 
           <div className="form-section">
-            <label className="section-label">Paper size</label>
+            <label className="section-label">
+              Paper size
+            </label>
 
             <div className="option-grid">
               <button
                 type="button"
-                className={paperSize === "A4" ? "option active" : "option"}
+                className={
+                  paperSize === "A4"
+                    ? "option active"
+                    : "option"
+                }
                 onClick={() => setPaperSize("A4")}
               >
                 A4
@@ -524,7 +515,11 @@ await generatePaymentQr(createdOrder);
 
               <button
                 type="button"
-                className={paperSize === "A3" ? "option active" : "option"}
+                className={
+                  paperSize === "A3"
+                    ? "option active"
+                    : "option"
+                }
                 onClick={() => setPaperSize("A3")}
               >
                 A3
@@ -535,21 +530,35 @@ await generatePaymentQr(createdOrder);
           {/* Printing Sides */}
 
           <div className="form-section">
-            <label className="section-label">Printing sides</label>
+            <label className="section-label">
+              Printing sides
+            </label>
 
             <div className="option-grid">
               <button
                 type="button"
-                className={printSides === "single" ? "option active" : "option"}
-                onClick={() => setPrintSides("single")}
+                className={
+                  printSides === "single"
+                    ? "option active"
+                    : "option"
+                }
+                onClick={() =>
+                  setPrintSides("single")
+                }
               >
                 Single Side
               </button>
 
               <button
                 type="button"
-                className={printSides === "double" ? "option active" : "option"}
-                onClick={() => setPrintSides("double")}
+                className={
+                  printSides === "double"
+                    ? "option active"
+                    : "option"
+                }
+                onClick={() =>
+                  setPrintSides("double")
+                }
               >
                 Front & Back
               </button>
@@ -563,53 +572,49 @@ await generatePaymentQr(createdOrder);
               <span>Estimated price</span>
 
               <small>
-                {files.length} {files.length === 1 ? "document" : "documents"} •{" "}
-                {totalPages} {totalPages === 1 ? "page" : "pages"} •{" "}
-                {totalSheets} {totalSheets === 1 ? "sheet" : "sheets"} •{" "}
-                {copies} {copies === 1 ? "copy" : "copies"}
+                {files.length}{" "}
+                {files.length === 1
+                  ? "document"
+                  : "documents"}{" "}
+                • {totalPages}{" "}
+                {totalPages === 1
+                  ? "page"
+                  : "pages"}{" "}
+                • {totalSheets}{" "}
+                {totalSheets === 1
+                  ? "sheet"
+                  : "sheets"}{" "}
+                • {copies}{" "}
+                {copies === 1
+                  ? "copy"
+                  : "copies"}
               </small>
             </div>
 
-            <strong>₹{calculatePrice()}</strong>
+            <strong>
+              ₹{calculatePrice()}
+            </strong>
           </div>
 
           {/* Payment Method */}
 
-          {!order && (
-            <div className="form-section">
-              <label className="section-label">Payment Method</label>
-
-              <div className="option-grid">
-                <button
-                  type="button"
-                  className={
-                    paymentMethod === "cash" ? "option active" : "option"
-                  }
-                  onClick={() => setPaymentMethod("cash")}
-                >
-                  💵 Cash
-                </button>
-
-                <button
-                  type="button"
-                  className={
-                    paymentMethod === "upi" ? "option active" : "option"
-                  }
-                  onClick={() => setPaymentMethod("upi")}
-                >
-                  📱 Pay Online
-                </button>
-              </div>
-            </div>
-          )}
+          
 
           {/* Error */}
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
 
           {/* Success */}
 
-          {success && <div className="success-message">{success}</div>}
+          {success && (
+            <div className="success-message">
+              {success}
+            </div>
+          )}
 
           {/* Send Order */}
 
@@ -619,141 +624,55 @@ await generatePaymentQr(createdOrder);
               onClick={handleUpload}
               disabled={!files.length || uploading}
             >
-              {uploading ? "Sending..." : "Send for Printing"}
+              {uploading
+                ? "Sending..."
+                : "Send for Printing"}
             </button>
           )}
 
           {/* Payment Section */}
 
           {order && (
-            <div className="payment-section">
-              <div className="payment-info">
-                <span>Order Created</span>
+  <div className="payment-section">
+    <div className="payment-info">
+      <span>Order Created</span>
+      <strong>₹{Number(order.totalPrice).toFixed(2)}</strong>
+    </div>
 
-                <strong>₹{Number(order.totalPrice).toFixed(2)}</strong>
-              </div>
+    <div className="payment-order-info">
+      <p>
+        Order ID: <strong>{order.id}</strong>
+      </p>
 
-              <div className="payment-order-info">
-                <p>
-                  Order ID: <strong>{order.id}</strong>
-                </p>
+      <p>
+        Customer: <strong>{order.customerName}</strong>
+      </p>
 
-                <p>
-                  Payment method:{" "}
-                  <strong>
-                    {order.paymentMethod === "upi" ? "UPI" : "Cash"}
-                  </strong>
-                </p>
+      <p>
+        Please pay at the cafe counter.
+      </p>
+    </div>
 
-                <p>
-                  Payment status:{" "}
-                  <strong>
-                    {order.paymentStatus === "to_verify"
-                      ? "To Verify"
-                      : "Pending"}
-                  </strong>
-                </p>
-              </div>
+    <button
+      type="button"
+      className="submit-button"
+      onClick={() => {
+        setOrder(null);
+        setSuccess("");
+        setError("");
+      }}
+    >
+      Create Another Order
+    </button>
+  </div>
+)}
 
-              {order.paymentMethod === "upi" ? (
-                <div className="upi-payment-box">
-                  <div className="upi-main-amount">
-                    <span>Amount to pay</span>
-
-                    <strong>₹{Number(order.totalPrice).toFixed(2)}</strong>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="pay-button"
-                    onClick={handlePayment}
-                  >
-                    📱 Pay with UPI App
-                  </button>
-
-                  <div className="upi-divider">
-                    <span>OR</span>
-                  </div>
-
-                  {paymentQr && (
-                    <div className="payment-qr-section">
-                      <QrCode size={22} />
-
-                      <h3>Scan UPI QR</h3>
-
-                      <img
-                        src={paymentQr}
-                        alt="UPI payment QR code"
-                        className="payment-qr"
-                      />
-
-                      <p className="payment-note">
-                        Scan this QR using Google Pay, PhonePe, Paytm or another
-                        UPI app.
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="upi-id-section">
-                    <span>UPI ID</span>
-
-                    <div className="upi-id-row">
-                      <strong>{OWNER_UPI_ID}</strong>
-
-                      <button
-                        type="button"
-                        onClick={copyUpiId}
-                        className="copy-upi-button"
-                      >
-                        {upiCopied ? (
-                          <>
-                            <Check size={16} />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={16} />
-                            Copy
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <p className="payment-note">
-                    If your UPI app doesn't open automatically, scan the QR code
-                    or copy the UPI ID and pay manually.
-                  </p>
-
-                  <p className="payment-note">
-                    After payment, the café owner will verify your payment.
-                  </p>
-                </div>
-              ) : (
-                <div className="cash-payment-message">
-                  💵 Please pay ₹{Number(order.totalPrice).toFixed(2)} at the
-                  counter.
-                </div>
-              )}
-
-              <button
-                type="button"
-                className="submit-button"
-                onClick={() => {
-                  setOrder(null);
-                  setSuccess("");
-                  setPaymentMethod("cash");
-                }}
-              >
-                Create Another Order
-              </button>
-            </div>
-          )}
         </main>
 
         <footer className="upload-footer">
           Your documents are securely handled for printing.
         </footer>
+
       </div>
     </div>
   );
