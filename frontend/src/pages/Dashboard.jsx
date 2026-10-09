@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import {
   QrCode,
+  Menu, X,
   LogOut,
   FileText,
   Download,
@@ -19,7 +20,7 @@ function Dashboard() {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(null);
-
+const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // =========================
@@ -261,13 +262,13 @@ function Dashboard() {
 
         </div>
 
-        <div className="dashboard-header-actions">
+        {/* <div className="dashboard-header-actions">
 
           <button
             className="pricing-button"
             onClick={() => navigate("/pricing")}
           >
-            <Printer size={16} />
+            <Printer size={13} />
             Pricing
           </button>
 
@@ -275,7 +276,7 @@ function Dashboard() {
             className="pricing-button"
             onClick={() => navigate("/qr-code")}
           >
-            <QrCode size={18} />
+            <QrCode size={13} />
             My QR Code
           </button>
 
@@ -283,11 +284,94 @@ function Dashboard() {
             className="pricing-button"
             onClick={logout}
           >
-            <LogOut size={16} />
+            <LogOut size={13} />
             Logout
           </button>
 
-        </div>
+        </div> */}
+
+        
+<div className="dashboard-header-actions">
+
+  {/* Desktop buttons */}
+  <div className="desktop-dashboard-actions">
+    <button
+      className="pricing-button"
+      onClick={() => navigate("/pricing")}
+    >
+      <Printer size={15} />
+      Pricing
+    </button>
+
+    <button
+      className="pricing-button"
+      onClick={() => navigate("/qr-code")}
+    >
+      <QrCode size={15} />
+      My QR Code
+    </button>
+
+    <button
+      className="pricing-button"
+      onClick={logout}
+    >
+      <LogOut size={15} />
+      Logout
+    </button>
+  </div>
+
+  {/* Mobile hamburger */}
+  <button
+    type="button"
+    className="dashboard-menu-toggle"
+    onClick={() => setMenuOpen((prev) => !prev)}
+    aria-label={menuOpen ? "Close menu" : "Open menu"}
+    aria-expanded={menuOpen}
+  >
+    {menuOpen ? <X size={23} /> : <Menu size={23} />}
+  </button>
+
+  {/* Mobile dropdown */}
+  {menuOpen && (
+    <div className="dashboard-mobile-menu">
+      <button
+        className="pricing-button"
+        onClick={() => {
+          setMenuOpen(false);
+          navigate("/pricing");
+        }}
+      >
+        <Printer size={16} />
+        Pricing
+      </button>
+
+      <button
+        className="pricing-button"
+        onClick={() => {
+          setMenuOpen(false);
+          navigate("/qr-code");
+        }}
+      >
+        <QrCode size={16} />
+        My QR Code
+      </button>
+
+      <button
+        className="pricing-button"
+        onClick={() => {
+          setMenuOpen(false);
+          logout();
+        }}
+      >
+        <LogOut size={16} />
+        Logout
+      </button>
+    </div>
+  )}
+
+</div>
+
+
 
       </header>
 

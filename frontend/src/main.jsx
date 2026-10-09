@@ -12,7 +12,7 @@ import("./index.css");
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter>                
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/upload/:qrCodeId" element={<UploadPage />} />
