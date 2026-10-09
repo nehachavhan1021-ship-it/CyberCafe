@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import api from "../services/api";
 
 function Login() {
@@ -7,6 +9,7 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,17 +25,14 @@ function Login() {
         password,
       });
 
-      // Save JWT
       localStorage.setItem("token", response.data.token);
-
-      // Go to dashboard
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
 
       setError(
         error.response?.data?.message ||
-          "Login failed. Please check your email and password.",
+          "Login failed. Please check your email and password."
       );
     } finally {
       setLoading(false);
@@ -64,21 +64,42 @@ function Login() {
           <div className="form-group">
             <label>Password</label>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? (
+                  <EyeOff size={19} />
+                ) : (
+                  <Eye size={19} />
+                )}
+              </button>
+            </div>
           </div>
 
           <button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
+
           <p className="login-register">
             Don't have an account?{" "}
-            <button type="button" onClick={() => navigate("/register")}>
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+            >
               Create Account
             </button>
           </p>
@@ -89,3 +110,4 @@ function Login() {
 }
 
 export default Login;
+

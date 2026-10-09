@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import api from "../services/api";
 
 function Register() {
@@ -8,6 +10,7 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [cyberCafeName, setCyberCafeName] = useState("");
 
   const [error, setError] = useState("");
@@ -28,14 +31,13 @@ function Register() {
       });
 
       alert("Account created successfully!");
-
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error);
 
       setError(
         error.response?.data?.message ||
-          "Registration failed. Please try again.",
+          "Registration failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -46,7 +48,10 @@ function Register() {
     <div className="register-page">
       <div className="register-box">
         <h1>CyberCafe</h1>
-        <p className="register-subtitle">Create your cybercafé owner account</p>
+
+        <p className="register-subtitle">
+          Create your cybercafé owner account
+        </p>
 
         {error && <div className="register-error">{error}</div>}
 
@@ -75,13 +80,31 @@ function Register() {
 
           <div className="form-group">
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? (
+                  <EyeOff size={19} />
+                ) : (
+                  <Eye size={19} />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
@@ -112,3 +135,4 @@ function Register() {
 }
 
 export default Register;
+

@@ -2665,3 +2665,55 @@ padding: 16px 12px;
 grid-template-columns: 1fr;
 }
 }
+
+
+/* Password show/hide control */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  color: var(--text-soft, #718096);
+  background: var(--surface, #eef2f6);
+  border: none;
+  border-radius: 10px;
+  box-shadow: none;
+
+  cursor: pointer;
+  transition: color 200ms ease, box-shadow 200ms ease;
+}
+
+.password-toggle:hover {
+  color: var(--accent, #8b5cf6);
+  box-shadow: var(--shadow-neu-flat);
+}
+
+.password-toggle:active {
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--accent, #8b5cf6);
+  outline-offset: 2px;
+}
+
