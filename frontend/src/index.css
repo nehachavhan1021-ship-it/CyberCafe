@@ -6,51 +6,516 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap");
 
 /* DESIGN TOKENS */
-:root {
-  --bg: #eef2f6;
-  --bg-dark: #1a1e24;
-  --surface: #eef2f6;
-  --surface-strong: #e6ebf0;
-  --surface-soft: #f4f7fa;
-  --navy: #2d3748;
-  --navy-light: #4a5568;
 
-  --accent: #8b5cf6;
-  --accent-dark: #694b9c;
-  --accent-soft: rgba(139, 92, 246, 0.15);
-  --purple: #8b5cf6;
-  --purple-soft: rgba(139, 92, 246, 0.15);
-  --green: #10b981;
-  --green-soft: rgba(16, 185, 129, 0.15);
-  --yellow: #f59e0b;
-  --yellow-soft: rgba(245, 158, 11, 0.15);
-  --red: #ef4444;
-  --red-soft: rgba(239, 68, 68, 0.15);
+/* ================================
+   PRINTCAFE UPLOAD PAGE
+   Neumorphism Theme
+================================ */
 
-  --text: #4a5568;
-  --text-soft: #718096;
-  --text-muted: #a0aec0;
-  --border: transparent;
-  --border-strong: transparent;
+.upload-page {
+  min-height: 100vh;
+  padding: 32px 18px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+}
 
-  --shadow-neu-flat: 6px 6px 14px #d1d9e6, -6px -6px 14px #fff;
-  --shadow-neu-raised: 8px 8px 18px #cbd5e1, -8px -8px 18px #fff;
-  --shadow-neu-hover: 10px 10px 22px #c2cede, -10px -10px 22px #fff;
-  --shadow-neu-pressed: inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #fff;
-  --shadow-neu-inset-deep:
-    inset 6px 6px 12px #c5d0e0, inset -6px -6px 12px #fff;
+.upload-container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
 
-  --shadow-sm: var(--shadow-neu-flat);
-  --shadow-md: var(--shadow-neu-raised);
-  --shadow-lg: 12px 12px 28px #c5d0e0, -12px -12px 28px #fff;
+/* Header */
 
-  --glass-blur: none;
-  --glass-blur-strong: none;
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-xl: 30px;
-  --transition: 200ms ease;
+.upload-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--navy);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-neu-raised);
+}
+
+/* Main card */
+
+.upload-card {
+  padding: 32px;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-neu-raised);
+}
+
+/* Sections */
+
+.form-section {
+  margin-bottom: 27px;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+/* Inputs */
+
+.customer-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 14px 17px;
+  border: none;
+  outline: none;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--navy);
+  font: inherit;
+  font-size: 14px;
+  box-shadow: var(--shadow-neu-pressed);
+  transition: box-shadow var(--transition);
+}
+
+.customer-input::placeholder {
+  color: var(--text-muted);
+}
+
+.customer-input:focus {
+  box-shadow: var(--shadow-neu-inset-deep);
+}
+
+.customer-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Cafe information */
+
+.cafe-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-flat);
+}
+
+.cafe-label {
+  margin-bottom: 5px;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cafe-name {
+  color: var(--navy);
+  font-size: 17px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* File upload area */
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 190px;
+  padding: 25px;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.file-upload:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.file-upload:active {
+  transform: scale(0.99);
+}
+
+.upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-neu-raised);
+}
+
+.file-upload p {
+  margin: 0;
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.file-upload span {
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+/* Selected files */
+
+.selected-files {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-flat);
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+  color: var(--navy);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.file-info p {
+  margin: 0;
+}
+
+.file-info span {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+/* Copies control */
+
+.copies-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.copies-control button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-neu-flat);
+  cursor: pointer;
+  transition: box-shadow var(--transition);
+}
+
+.copies-control button:hover {
+  box-shadow: var(--shadow-neu-raised);
+}
+
+.copies-control button:active {
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.copies-control input {
+  width: 48px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--navy);
+  text-align: center;
+  font: inherit;
+  font-weight: 700;
+}
+
+/* Print options */
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.option {
+  min-width: 0;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-neu-flat);
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition),
+    color var(--transition);
+}
+
+.option:hover {
+  box-shadow: var(--shadow-neu-hover);
+}
+
+.option.active,
+.option.selected,
+.option[aria-pressed="true"] {
+  color: var(--accent-dark);
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Price summary */
+
+.price-box {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+.price-box p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.price-box h2 {
+  margin: 8px 0 0;
+  color: var(--accent-dark);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+/* Messages */
+
+.error-message,
+.success-message {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.error-message {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.success-message {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+/* Primary button */
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 24px;
+  padding: 15px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow-neu-raised);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.submit-button:hover {
+  box-shadow: var(--shadow-neu-hover);
+}
+
+.submit-button:active {
+  box-shadow: var(--shadow-neu-pressed);
+  transform: scale(0.99);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Payment section */
+
+.payment-section {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-flat);
+}
+
+.payment-info {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.payment-order-info {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--navy);
+  box-shadow: var(--shadow-neu-pressed);
+  overflow-wrap: anywhere;
+}
+
+/* Footer */
+
+.upload-footer {
+  margin-top: 24px;
+  color: var(--text-soft);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 600px) {
+  .upload-page {
+    padding: 20px 12px;
+  }
+
+  .upload-header {
+    margin-bottom: 22px;
+  }
+
+  .brand {
+    gap: 10px;
+    font-size: 22px;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .upload-card {
+    padding: 22px 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  .form-section {
+    margin-bottom: 23px;
+  }
+
+  .file-upload {
+    min-height: 165px;
+    padding: 20px 14px;
+  }
+
+  .option-grid {
+    gap: 10px;
+  }
+
+  .option {
+    padding: 13px 10px;
+    font-size: 13px;
+  }
+
+  .price-box {
+    padding: 18px;
+  }
+
+  .price-box h2 {
+    font-size: 27px;
+  }
+
+  .payment-section {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .upload-page {
+    padding: 14px 8px;
+  }
+
+  .upload-card {
+    padding: 18px 12px;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-file {
+    gap: 8px;
+    padding: 11px;
+  }
 }
 
 /* RESET & GLOBAL */
@@ -1994,7 +2459,7 @@ canvas {
 
 /* =========================================
    PRINTCAFE UPLOAD PAGE — REDESIGNED
-   Add at the VERY BOTTOM of index.css
+  
 ========================================= */
 
 .upload-page {
